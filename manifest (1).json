@@ -1,0 +1,11 @@
+{
+  "background_color": "#20ba28",
+  "dir": "ltr",
+  "display": "standalone",
+  "name": "SF Gallery",
+  "orientation": "any",
+  "scope": "/",
+  "short_name": "SF Gallery",
+  "start_url": "/",
+  "theme_color": "#25cc21"
+}
