@@ -1,0 +1,938 @@
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SF Gallery - Your Ultimate Shopping Destination</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            50: '#f0fdf4',
+                            100: '#dcfce7',
+                            500: '#22c55e',
+                            600: '#16a34a',
+                            700: '#15803d',
+                            900: '#14532d',
+                        },
+                        dark: {
+                            bg: '#0f172a',
+                            card: '#1e293b',
+                            border: '#334155',
+                            text: '#f8fafc'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <!-- Google Font Inter -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        /* Custom scrollbar */
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #94a3b8; border-radius: 4px; }
+        .dark ::-webkit-scrollbar-thumb { background: #475569; }
+    </style>
+</head>
+<body class="bg-gray-50 text-gray-800 dark:bg-slate-900 dark:text-gray-100 min-h-screen flex flex-col transition-colors duration-200">
+
+    <!-- Toast Container -->
+    <div id="toast-container" class="fixed top-20 right-4 z-50 flex flex-col gap-2 max-w-sm w-full pointer-events-none"></div>
+
+    <!-- Header / Navbar -->
+    <header class="sticky top-0 z-40 bg-white/90 dark:bg-slate-900/90 backdrop-blur-md border-b border-gray-200 dark:border-slate-800 transition-colors">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16 sm:h-20 gap-4">
+                
+                <!-- Logo & Branding -->
+                <div class="flex items-center gap-3 cursor-pointer" onclick="switchView('store')">
+                    <div class="w-10 h-10 sm:w-12 sm:h-12 bg-gradient-to-tr from-brand-600 to-emerald-400 rounded-xl flex items-center justify-center text-white font-bold text-xl shadow-lg shadow-brand-500/20">
+                        SF
+                    </div>
+                    <div>
+                        <h1 class="text-xl sm:text-2xl font-extrabold tracking-tight bg-gradient-to-r from-brand-600 to-emerald-500 bg-clip-text text-transparent">
+                            SF Gallery
+                        </h1>
+                        <p class="text-xs text-gray-500 dark:text-gray-400 hidden sm:block font-medium">Your Ultimate Shopping Destination</p>
+                    </div>
+                </div>
+
+                <!-- Desktop Search Bar -->
+                <div class="hidden md:flex flex-1 max-w-md mx-4 relative">
+                    <input type="text" id="desktop-search" oninput="handleSearch(event)" placeholder="Search smartphones, accessories, gadgets..." 
+                        class="w-full pl-10 pr-4 py-2 rounded-full border border-gray-300 dark:border-slate-700 bg-gray-50 dark:bg-slate-800 focus:outline-none focus:ring-2 focus:ring-brand-500 text-sm transition">
+                    <svg class="w-5 h-5 absolute left-3 top-2.5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+                    </svg>
+                </div>
+
+                <!-- Action Controls -->
+                <div class="flex items-center gap-2 sm:gap-4">
+                    
+                    <!-- Admin / Storefront Toggle Button -->
+                    <button id="view-toggle-btn" onclick="toggleMainView()" class="flex items-center gap-2 px-3 py-1.5 sm:px-4 sm:py-2 rounded-xl text-xs sm:text-sm font-semibold bg-gray-100 hover:bg-gray-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-gray-700 dark:text-gray-200 transition">
+                        <svg id="view-icon" class="w-4 h-4 text-brand-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/>
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                        </svg>
+                        <span id="view-label" class="hidden sm:inline">Admin Panel</span>
+                    </button>
+
+                    <!-- Dark Mode Toggle -->
+                    <button onclick="toggleTheme()" class="p-2 rounded-xl bg-gray-100 dark:bg-slate-800 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-slate-700 transition" title="Toggle Theme">
+                        <svg class="w-5 h-5 dark:hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"/></svg>
+                        <svg class="w-5 h-5 hidden dark:block" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"/></svg>
+                    </button>
+
+                    <!-- Cart Trigger Button -->
+                    <button id="cart-btn" onclick="openCartDrawer()" class="relative p-2 sm:px-3 sm:py-2 rounded-xl bg-brand-50 dark:bg-brand-900/40 text-brand-600 dark:text-brand-400 font-semibold flex items-center gap-2 hover:bg-brand-100 dark:hover:bg-brand-900/60 transition">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"/>
+                        </svg>
+                        <span class="hidden sm:inline text-sm">Cart</span>
+                        <span id="cart-badge" class="absolute -top-1.5 -right-1.5 bg-brand-600 text-white text-xs font-bold w-5 h-5 rounded-full flex items-center justify-center shadow">0</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Mobile Search Bar -->
+            <div class="pb-3 md:hidden">
+                <div class="relative">
+                    <input type="text" id="mobile-search" oninput="handleSearch(event)" placeholder="Search products..." 
+                        class="w-full pl-10 pr-4 py-2 rounded-full border border-gray-300 dark:border-slate-700 bg-gray-50 dark:bg-slate-800 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500">
+                    <svg class="w-5 h-5 absolute left-3 top-2.5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+                    </svg>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- MAIN STORE FRONT VIEW -->
+    <main id="store-view" class="flex-grow max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6">
+        
+        <!-- Hero Banner -->
+        <div class="relative rounded-2xl overflow-hidden bg-gradient-to-r from-slate-900 via-brand-900 to-slate-900 text-white mb-8 p-6 sm:p-10 shadow-xl">
+            <div class="relative z-10 max-w-xl">
+                <span class="inline-block px-3 py-1 bg-brand-500/20 text-brand-300 border border-brand-500/30 rounded-full text-xs font-semibold uppercase tracking-wider mb-3">Official Tech & Lifestyle Store</span>
+                <h2 class="text-2xl sm:text-4xl font-extrabold tracking-tight mb-2">Upgrade Your Tech Essentials</h2>
+                <p class="text-sm sm:text-base text-gray-300 mb-6">Explore authentic smartphones, premium wireless earbuds, smartwatches, and fast charging accessories with fast delivery across Bangladesh.</p>
+                <a href="#product-grid" class="inline-flex items-center gap-2 bg-brand-500 hover:bg-brand-600 text-white font-semibold px-5 py-2.5 rounded-xl shadow-lg shadow-brand-500/30 transition">
+                    Shop Now
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
+                </a>
+            </div>
+            <div class="absolute right-0 bottom-0 top-0 opacity-10 sm:opacity-20 flex items-center pr-10 pointer-events-none">
+                <svg class="w-96 h-96 text-white" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+            </div>
+        </div>
+
+        <!-- Category Filters -->
+        <div class="mb-8">
+            <div class="flex items-center justify-between mb-4">
+                <h3 class="text-lg font-bold text-gray-900 dark:text-white">Categories</h3>
+                <span id="product-count" class="text-xs text-gray-500 font-medium">Showing all items</span>
+            </div>
+            <div class="flex items-center gap-2 overflow-x-auto pb-2 scrollbar-none" id="category-bar">
+                <!-- Injected dynamically -->
+            </div>
+        </div>
+
+        <!-- Product Grid -->
+        <div id="product-grid" class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-6">
+            <!-- Product Cards injected dynamically -->
+        </div>
+
+        <!-- Empty Search State -->
+        <div id="no-products" class="hidden text-center py-16">
+            <svg class="w-16 h-16 mx-auto text-gray-400 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.172 9.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+            <h3 class="text-lg font-semibold text-gray-700 dark:text-gray-300">No products found</h3>
+            <p class="text-sm text-gray-500 mt-1">Try tweaking your search term or filter options.</p>
+        </div>
+    </main>
+
+    <!-- MAIN ADMIN PANEL VIEW -->
+    <main id="admin-view" class="hidden flex-grow max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6">
+        
+        <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-8">
+            <div>
+                <h2 class="text-2xl font-bold text-gray-900 dark:text-white">Admin Dashboard</h2>
+                <p class="text-sm text-gray-500 dark:text-gray-400">Manage products, orders, inventory, and track IMEI numbers.</p>
+            </div>
+            <button onclick="openAddProductModal()" class="flex items-center gap-2 bg-brand-600 hover:bg-brand-700 text-white font-semibold px-4 py-2 rounded-xl shadow transition text-sm">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"/></svg>
+                Add New Product
+            </button>
+        </div>
+
+        <!-- Admin Analytics Metrics -->
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8">
+            <div class="bg-white dark:bg-slate-800 p-5 rounded-2xl border border-gray-200 dark:border-slate-700 shadow-sm">
+                <p class="text-xs font-semibold text-gray-500 uppercase tracking-wider">Total Sales Revenue</p>
+                <h3 id="stat-revenue" class="text-2xl font-extrabold text-brand-600 dark:text-brand-400 mt-1">৳ 0</h3>
+            </div>
+            <div class="bg-white dark:bg-slate-800 p-5 rounded-2xl border border-gray-200 dark:border-slate-700 shadow-sm">
+                <p class="text-xs font-semibold text-gray-500 uppercase tracking-wider">Total Orders Placed</p>
+                <h3 id="stat-orders" class="text-2xl font-extrabold text-gray-900 dark:text-white mt-1">0</h3>
+            </div>
+            <div class="bg-white dark:bg-slate-800 p-5 rounded-2xl border border-gray-200 dark:border-slate-700 shadow-sm">
+                <p class="text-xs font-semibold text-gray-500 uppercase tracking-wider">Active Inventory Items</p>
+                <h3 id="stat-products" class="text-2xl font-extrabold text-gray-900 dark:text-white mt-1">0</h3>
+            </div>
+        </div>
+
+        <!-- Orders Management Table -->
+        <div class="bg-white dark:bg-slate-800 rounded-2xl border border-gray-200 dark:border-slate-700 shadow-sm overflow-hidden mb-8">
+            <div class="px-6 py-4 border-b border-gray-200 dark:border-slate-700 flex justify-between items-center">
+                <h3 class="font-bold text-gray-900 dark:text-white">Customer Orders</h3>
+                <span id="order-count-badge" class="bg-brand-100 dark:bg-brand-900/50 text-brand-700 dark:text-brand-300 text-xs font-semibold px-2.5 py-1 rounded-full">0 Orders</span>
+            </div>
+            <div class="overflow-x-auto">
+                <table class="w-full text-left text-sm text-gray-600 dark:text-gray-300">
+                    <thead class="bg-gray-50 dark:bg-slate-700/50 text-xs uppercase font-semibold text-gray-500 dark:text-gray-400">
+                        <tr>
+                            <th class="px-6 py-3">Order ID</th>
+                            <th class="px-6 py-3">Customer & Phone</th>
+                            <th class="px-6 py-3">Address</th>
+                            <th class="px-6 py-3">Payment</th>
+                            <th class="px-6 py-3">Items Purchased</th>
+                            <th class="px-6 py-3">Total Amount</th>
+                            <th class="px-6 py-3">Status</th>
+                        </tr>
+                    </thead>
+                    <tbody id="admin-orders-list" class="divide-y divide-gray-200 dark:divide-slate-700">
+                        <!-- Orders injected here -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Inventory Management Table -->
+        <div class="bg-white dark:bg-slate-800 rounded-2xl border border-gray-200 dark:border-slate-700 shadow-sm overflow-hidden">
+            <div class="px-6 py-4 border-b border-gray-200 dark:border-slate-700">
+                <h3 class="font-bold text-gray-900 dark:text-white">Store Inventory</h3>
+            </div>
+            <div class="overflow-x-auto">
+                <table class="w-full text-left text-sm text-gray-600 dark:text-gray-300">
+                    <thead class="bg-gray-50 dark:bg-slate-700/50 text-xs uppercase font-semibold text-gray-500 dark:text-gray-400">
+                        <tr>
+                            <th class="px-6 py-3">Product</th>
+                            <th class="px-6 py-3">Category</th>
+                            <th class="px-6 py-3">Price</th>
+                            <th class="px-6 py-3">Stock Status</th>
+                            <th class="px-6 py-3">IMEI/SN Track</th>
+                            <th class="px-6 py-3 text-right">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="admin-inventory-list" class="divide-y divide-gray-200 dark:divide-slate-700">
+                        <!-- Products injected here -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-white dark:bg-slate-900 border-t border-gray-200 dark:border-slate-800 mt-auto transition-colors">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+            <div class="flex flex-col md:flex-row items-center justify-between gap-4 text-center md:text-left">
+                <div>
+                    <h3 class="text-lg font-bold text-gray-900 dark:text-white">SF Gallery</h3>
+                    <p class="text-xs text-gray-500 dark:text-gray-400">Your Ultimate Shopping Destination in Dinajpur & All Bangladesh.</p>
+                </div>
+                <div class="text-xs text-gray-500 dark:text-gray-400">
+                    &copy; 2026 SF Gallery. Built with pure performance and clean code.
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- CART SLIDE-OVER DRAWER -->
+    <div id="cart-drawer-backdrop" onclick="closeCartDrawer()" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 opacity-0 pointer-events-none transition-opacity duration-300"></div>
+    <div id="cart-drawer" class="fixed inset-y-0 right-0 max-w-md w-full bg-white dark:bg-slate-900 z-50 shadow-2xl transform translate-x-full transition-transform duration-300 flex flex-col">
+        <!-- Cart Header -->
+        <div class="px-6 py-4 border-b border-gray-200 dark:border-slate-800 flex items-center justify-between">
+            <div class="flex items-center gap-2">
+                <svg class="w-5 h-5 text-brand-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"/></svg>
+                <h3 class="font-bold text-lg text-gray-900 dark:text-white">Shopping Cart</h3>
+            </div>
+            <button onclick="closeCartDrawer()" class="p-1 rounded-lg hover:bg-gray-100 dark:hover:bg-slate-800 text-gray-500">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+            </button>
+        </div>
+
+        <!-- Cart Items List -->
+        <div id="cart-items-container" class="flex-grow overflow-y-auto p-6 space-y-4">
+            <!-- Dynamic Cart Items -->
+        </div>
+
+        <!-- Cart Summary & Delivery -->
+        <div class="p-6 border-t border-gray-200 dark:border-slate-800 bg-gray-50 dark:bg-slate-800/50 space-y-3">
+            <div class="flex items-center justify-between text-sm">
+                <span class="text-gray-600 dark:text-gray-400">Subtotal</span>
+                <span id="cart-subtotal" class="font-semibold text-gray-900 dark:text-white">৳ 0</span>
+            </div>
+            
+            <!-- Delivery Location Option -->
+            <div class="text-xs">
+                <label class="block font-medium text-gray-700 dark:text-gray-300 mb-1">Delivery Location</label>
+                <div class="grid grid-cols-2 gap-2">
+                    <label class="flex items-center gap-2 p-2 rounded-lg border border-gray-300 dark:border-slate-700 cursor-pointer bg-white dark:bg-slate-800">
+                        <input type="radio" name="delivery-zone" value="inside" checked onchange="updateCartSummary()" class="text-brand-600 focus:ring-brand-500">
+                        <span>Dinajpur City (৳ 60)</span>
+                    </label>
+                    <label class="flex items-center gap-2 p-2 rounded-lg border border-gray-300 dark:border-slate-700 cursor-pointer bg-white dark:bg-slate-800">
+                        <input type="radio" name="delivery-zone" value="outside" onchange="updateCartSummary()" class="text-brand-600 focus:ring-brand-500">
+                        <span>Outside (৳ 120)</span>
+                    </label>
+                </div>
+            </div>
+
+            <div class="flex items-center justify-between text-sm">
+                <span class="text-gray-600 dark:text-gray-400">Delivery Charge</span>
+                <span id="cart-delivery-cost" class="font-semibold text-gray-900 dark:text-white">৳ 60</span>
+            </div>
+
+            <div class="border-t border-gray-200 dark:border-slate-700 pt-2 flex items-center justify-between font-bold text-base">
+                <span class="text-gray-900 dark:text-white">Total</span>
+                <span id="cart-total" class="text-brand-600 dark:text-brand-400 text-lg">৳ 0</span>
+            </div>
+
+            <button onclick="openCheckoutModal()" id="btn-proceed-checkout" class="w-full bg-brand-600 hover:bg-brand-700 text-white font-semibold py-3 rounded-xl shadow-lg shadow-brand-600/30 transition flex items-center justify-center gap-2">
+                Proceed to Checkout
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
+            </button>
+        </div>
+    </div>
+
+    <!-- CHECKOUT MODAL -->
+    <div id="checkout-modal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 opacity-0 pointer-events-none transition-opacity duration-300">
+        <div class="bg-white dark:bg-slate-900 rounded-2xl max-w-lg w-full p-6 shadow-2xl border border-gray-200 dark:border-slate-800 max-h-[90vh] overflow-y-auto">
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="text-xl font-bold text-gray-900 dark:text-white">Complete Your Order</h3>
+                <button onclick="closeCheckoutModal()" class="text-gray-400 hover:text-gray-600">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                </button>
+            </div>
+
+            <form id="checkout-form" onsubmit="submitOrder(event)" class="space-y-4">
+                <div>
+                    <label class="block text-xs font-semibold text-gray-700 dark:text-gray-300 uppercase mb-1">Full Name *</label>
+                    <input type="text" id="cust-name" required placeholder="e.g. Tanvir Hossain" class="w-full px-3 py-2 rounded-xl border border-gray-300 dark:border-slate-700 bg-gray-50 dark:bg-slate-800 text-sm focus:ring-2 focus:ring-brand-500 outline-none">
+                </div>
+
+                <div>
+                    <label class="block text-xs font-semibold text-gray-700 dark:text-gray-300 uppercase mb-1">Phone Number *</label>
+                    <input type="tel" id="cust-phone" required pattern="[0-9]{11}" placeholder="01712345678" class="w-full px-3 py-2 rounded-xl border border-gray-300 dark:border-slate-700 bg-gray-50 dark:bg-slate-800 text-sm focus:ring-2 focus:ring-brand-500 outline-none">
+                </div>
+
+                <div>
+                    <label class="block text-xs font-semibold text-gray-700 dark:text-gray-300 uppercase mb-1">Delivery Address *</label>
+                    <textarea id="cust-address" required rows="2" placeholder="Full address (House no, Road, Area, Thana)" class="w-full px-3 py-2 rounded-xl border border-gray-300 dark:border-slate-700 bg-gray-50 dark:bg-slate-800 text-sm focus:ring-2 focus:ring-brand-500 outline-none"></textarea>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-semibold text-gray-700 dark:text-gray-300 uppercase mb-2">Payment Option *</label>
+                    <div class="grid grid-cols-2 gap-2" id="payment-options">
+                        <label class="flex items-center gap-2 p-3 rounded-xl border border-gray-300 dark:border-slate-700 cursor-pointer hover:border-brand-500 transition">
+                            <input type="radio" name="payment-method" value="COD" checked onchange="toggleTrxField()" class="text-brand-600 focus:ring-brand-500">
+                            <span class="text-xs font-medium">Cash on Delivery</span>
+                        </label>
+                        <label class="flex items-center gap-2 p-3 rounded-xl border border-gray-300 dark:border-slate-700 cursor-pointer hover:border-brand-500 transition">
+                            <input type="radio" name="payment-method" value="bKash" onchange="toggleTrxField()" class="text-brand-600 focus:ring-brand-500">
+                            <span class="text-xs font-medium text-pink-600 dark:text-pink-400">bKash Personal</span>
+                        </label>
+                        <label class="flex items-center gap-2 p-3 rounded-xl border border-gray-300 dark:border-slate-700 cursor-pointer hover:border-brand-500 transition">
+                            <input type="radio" name="payment-method" value="Nagad" onchange="toggleTrxField()" class="text-brand-600 focus:ring-brand-500">
+                            <span class="text-xs font-medium text-orange-600 dark:text-orange-400">Nagad Personal</span>
+                        </label>
+                        <label class="flex items-center gap-2 p-3 rounded-xl border border-gray-300 dark:border-slate-700 cursor-pointer hover:border-brand-500 transition">
+                            <input type="radio" name="payment-method" value="Rocket" onchange="toggleTrxField()" class="text-brand-600 focus:ring-brand-500">
+                            <span class="text-xs font-medium text-purple-600 dark:text-purple-400">Rocket</span>
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Transaction ID input (visible for mobile banking) -->
+                <div id="trx-container" class="hidden bg-brand-50 dark:bg-brand-900/30 p-3 rounded-xl border border-brand-200 dark:border-brand-800">
+                    <p class="text-xs text-brand-800 dark:text-brand-300 mb-2">Send Money to <strong>01700000000</strong> and enter TrxID below:</p>
+                    <input type="text" id="cust-trx" placeholder="e.g. 9J7X8KLM" class="w-full px-3 py-2 rounded-xl border border-gray-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-sm focus:ring-2 focus:ring-brand-500 outline-none uppercase">
+                </div>
+
+                <div class="pt-2">
+                    <button type="submit" class="w-full bg-brand-600 hover:bg-brand-700 text-white font-bold py-3 rounded-xl shadow-lg shadow-brand-600/30 transition">
+                        Confirm & Place Order
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- ORDER RECEIPT MODAL -->
+    <div id="receipt-modal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 opacity-0 pointer-events-none transition-opacity duration-300">
+        <div class="bg-white dark:bg-slate-900 rounded-2xl max-w-md w-full p-6 shadow-2xl border border-gray-200 dark:border-slate-800 text-center">
+            <div class="w-16 h-16 bg-brand-100 dark:bg-brand-900/50 text-brand-600 dark:text-brand-400 rounded-full flex items-center justify-center mx-auto mb-4">
+                <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+            </div>
+            <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-1">Order Placed Successfully!</h3>
+            <p class="text-xs text-gray-500 mb-4">Thank you for shopping with SF Gallery.</p>
+            
+            <div class="bg-gray-50 dark:bg-slate-800 p-4 rounded-xl text-left space-y-2 text-xs mb-6 border border-gray-200 dark:border-slate-700">
+                <div class="flex justify-between"><span class="text-gray-500">Order Reference:</span><span id="rec-id" class="font-bold text-gray-900 dark:text-white"></span></div>
+                <div class="flex justify-between"><span class="text-gray-500">Customer Name:</span><span id="rec-name" class="font-semibold text-gray-800 dark:text-gray-200"></span></div>
+                <div class="flex justify-between"><span class="text-gray-500">Payment Option:</span><span id="rec-pay" class="font-semibold text-gray-800 dark:text-gray-200"></span></div>
+                <div class="flex justify-between border-t border-gray-200 dark:border-slate-700 pt-2"><span class="text-gray-500">Total Payable Amount:</span><span id="rec-amount" class="font-bold text-brand-600 text-sm"></span></div>
+            </div>
+
+            <button onclick="closeReceiptModal()" class="w-full bg-brand-600 hover:bg-brand-700 text-white font-semibold py-2.5 rounded-xl transition">
+                Continue Shopping
+            </button>
+        </div>
+    </div>
+
+    <!-- QUICK VIEW PRODUCT MODAL -->
+    <div id="quickview-modal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 opacity-0 pointer-events-none transition-opacity duration-300">
+        <div class="bg-white dark:bg-slate-900 rounded-2xl max-w-lg w-full p-6 shadow-2xl border border-gray-200 dark:border-slate-800 relative">
+            <button onclick="closeQuickView()" class="absolute top-4 right-4 text-gray-400 hover:text-gray-600">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+            </button>
+            <div id="quickview-content"></div>
+        </div>
+    </div>
+
+    <!-- ADD PRODUCT MODAL (ADMIN) -->
+    <div id="add-product-modal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 opacity-0 pointer-events-none transition-opacity duration-300">
+        <div class="bg-white dark:bg-slate-900 rounded-2xl max-w-md w-full p-6 shadow-2xl border border-gray-200 dark:border-slate-800">
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="text-lg font-bold text-gray-900 dark:text-white">Add New Product</h3>
+                <button onclick="closeAddProductModal()" class="text-gray-400 hover:text-gray-600">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                </button>
+            </div>
+
+            <form onsubmit="saveNewProduct(event)" class="space-y-3">
+                <div>
+                    <label class="block text-xs font-semibold text-gray-700 dark:text-gray-300 uppercase mb-1">Product Title</label>
+                    <input type="text" id="p-title" required class="w-full px-3 py-2 rounded-xl border border-gray-300 dark:border-slate-700 bg-gray-50 dark:bg-slate-800 text-sm focus:ring-2 focus:ring-brand-500 outline-none">
+                </div>
+                <div class="grid grid-cols-2 gap-2">
+                    <div>
+                        <label class="block text-xs font-semibold text-gray-700 dark:text-gray-300 uppercase mb-1">Price (৳ BDT)</label>
+                        <input type="number" id="p-price" required class="w-full px-3 py-2 rounded-xl border border-gray-300 dark:border-slate-700 bg-gray-50 dark:bg-slate-800 text-sm focus:ring-2 focus:ring-brand-500 outline-none">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-gray-700 dark:text-gray-300 uppercase mb-1">Category</label>
+                        <select id="p-category" class="w-full px-3 py-2 rounded-xl border border-gray-300 dark:border-slate-700 bg-gray-50 dark:bg-slate-800 text-sm focus:ring-2 focus:ring-brand-500 outline-none">
+                            <option value="Mobile & Accessories">Mobile & Accessories</option>
+                            <option value="Electronics">Electronics</option>
+                            <option value="Fashion">Fashion</option>
+                            <option value="LifeStyle">LifeStyle</option>
+                        </select>
+                    </div>
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-gray-700 dark:text-gray-300 uppercase mb-1">Image URL</label>
+                    <input type="url" id="p-img" required placeholder="https://..." class="w-full px-3 py-2 rounded-xl border border-gray-300 dark:border-slate-700 bg-gray-50 dark:bg-slate-800 text-sm focus:ring-2 focus:ring-brand-500 outline-none">
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-gray-700 dark:text-gray-300 uppercase mb-1">IMEI / Serial No (Optional)</label>
+                    <input type="text" id="p-imei" placeholder="e.g. 864201928371928" class="w-full px-3 py-2 rounded-xl border border-gray-300 dark:border-slate-700 bg-gray-50 dark:bg-slate-800 text-sm focus:ring-2 focus:ring-brand-500 outline-none">
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-gray-700 dark:text-gray-300 uppercase mb-1">Badge Tag</label>
+                    <input type="text" id="p-badge" placeholder="e.g. Hot / In Stock" class="w-full px-3 py-2 rounded-xl border border-gray-300 dark:border-slate-700 bg-gray-50 dark:bg-slate-800 text-sm focus:ring-2 focus:ring-brand-500 outline-none">
+                </div>
+                <button type="submit" class="w-full mt-2 bg-brand-600 hover:bg-brand-700 text-white font-semibold py-2.5 rounded-xl transition">
+                    Save Product
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- JAVASCRIPT APPLICATION LOGIC -->
+    <script>
+        // State Management
+        let products = [
+            { id: 1, title: 'Xiaomi Redmi Note 13 Pro', category: 'Mobile & Accessories', price: 28500, rating: 4.8, badge: 'Hot', img: 'https://images.unsplash.com/photo-1598327105666-5b89351aff97?auto=format&fit=crop&w=400&q=80', imei: '864902182740192', desc: 'Powerful 200MP camera phone with AMOLED display and 67W fast charging.' },
+            { id: 2, title: 'Realme Buds Air 5 Wireless', category: 'Electronics', price: 3850, rating: 4.7, badge: 'In Stock', img: 'https://images.unsplash.com/photo-1590658268037-6bf12165a8df?auto=format&fit=crop&w=400&q=80', imei: 'SN-RBA5-9921', desc: '50dB Active Noise Cancellation with deep bass drivers.' },
+            { id: 3, title: 'Haylou Solar Plus Smartwatch', category: 'LifeStyle', price: 4200, rating: 4.6, badge: 'Best Seller', img: 'https://images.unsplash.com/photo-1508685096489-7aacd43bd3b1?auto=format&fit=crop&w=400&q=80', imei: 'SN-HW-1102', desc: 'AMOLED Bluetooth calling smartwatch with 100+ sports modes.' },
+            { id: 4, title: 'Anker 20W Fast Charger Adapter', category: 'Mobile & Accessories', price: 1450, rating: 4.9, badge: 'Official', img: 'https://images.unsplash.com/photo-1583863788434-e58a36330cf0?auto=format&fit=crop&w=400&q=80', imei: 'N/A', desc: 'Compact PowerPort III Nano adapter for iPhone and Android devices.' },
+            { id: 5, title: 'Baseus 20000mAh Power Bank', category: 'Electronics', price: 2900, rating: 4.8, badge: 'In Stock', img: 'https://images.unsplash.com/photo-1609091839311-d5365f9ff1c5?auto=format&fit=crop&w=400&q=80', imei: 'SN-PB20K-881', desc: '22.5W fast charging output with digital battery status screen.' },
+            { id: 6, title: 'Premium Leather Smart Wallet', category: 'Fashion', price: 950, rating: 4.5, badge: 'New', img: 'https://images.unsplash.com/photo-1627123424574-724758594e93?auto=format&fit=crop&w=400&q=80', imei: 'N/A', desc: 'Genuine leather slim RFID blocking wallet.' }
+        ];
+
+        let cart = [];
+        let orders = [];
+        let currentCategory = 'All';
+        let searchQuery = '';
+        let currentView = 'store'; // 'store' or 'admin'
+
+        const categories = ['All', 'Mobile & Accessories', 'Electronics', 'Fashion', 'LifeStyle'];
+
+        // Initial Load
+        window.onload = function() {
+            renderCategories();
+            renderProducts();
+            updateCartBadge();
+            renderAdminInventory();
+            renderAdminOrders();
+        };
+
+        // Render Category Chips
+        function renderCategories() {
+            const container = document.getElementById('category-bar');
+            container.innerHTML = categories.map(cat => `
+                <button onclick="setCategory('${cat}')" class="px-4 py-2 rounded-xl text-xs sm:text-sm font-medium whitespace-nowrap transition ${currentCategory === cat ? 'bg-brand-600 text-white shadow-md' : 'bg-white dark:bg-slate-800 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-slate-700'}">
+                    ${cat}
+                </button>
+            `).join('');
+        }
+
+        function setCategory(cat) {
+            currentCategory = cat;
+            renderCategories();
+            renderProducts();
+        }
+
+        function handleSearch(e) {
+            searchQuery = e.target.value.toLowerCase();
+            renderProducts();
+        }
+
+        // Render Store Products
+        function renderProducts() {
+            const grid = document.getElementById('product-grid');
+            const emptyState = document.getElementById('no-products');
+            const countLabel = document.getElementById('product-count');
+
+            const filtered = products.filter(p => {
+                const matchesCat = currentCategory === 'All' || p.category === currentCategory;
+                const matchesSearch = p.title.toLowerCase().includes(searchQuery) || p.category.toLowerCase().includes(searchQuery);
+                return matchesCat && matchesSearch;
+            });
+
+            countLabel.innerText = `Showing ${filtered.length} items`;
+
+            if (filtered.length === 0) {
+                grid.innerHTML = '';
+                emptyState.classList.remove('hidden');
+                return;
+            }
+
+            emptyState.classList.add('hidden');
+            grid.innerHTML = filtered.map(p => `
+                <div class="bg-white dark:bg-slate-800 rounded-2xl border border-gray-200 dark:border-slate-700 overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 flex flex-col group">
+                    <div class="relative overflow-hidden bg-gray-100 dark:bg-slate-700 aspect-square">
+                        <img src="${p.img}" alt="${p.title}" class="w-full h-full object-cover group-hover:scale-105 transition duration-500" onerror="this.src='https://placehold.co/400x400/22c55e/ffffff?text=SF+Gallery'">
+                        <span class="absolute top-2 left-2 bg-slate-900/80 backdrop-blur-md text-white text-[10px] font-bold px-2 py-0.5 rounded-full uppercase tracking-wider">${p.badge}</span>
+                        <button onclick="openQuickView(${p.id})" class="absolute bottom-2 right-2 bg-white/90 dark:bg-slate-900/90 text-gray-700 dark:text-gray-200 p-2 rounded-xl opacity-0 group-hover:opacity-100 transition duration-200 shadow" title="Quick View">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
+                        </button>
+                    </div>
+                    <div class="p-4 flex flex-col flex-grow">
+                        <span class="text-[11px] font-semibold text-brand-600 dark:text-brand-400 uppercase tracking-wider mb-1">${p.category}</span>
+                        <h4 class="font-bold text-sm text-gray-900 dark:text-white line-clamp-2 mb-2 flex-grow">${p.title}</h4>
+                        <div class="flex items-center gap-1 mb-3">
+                            <svg class="w-4 h-4 text-amber-400 fill-current" viewBox="0 0 20 20"><path d="M10 15l-5.878 3.09 1.123-6.545L.489 6.91l6.572-.955L10 0l2.939 5.955 6.572.955-4.756 4.635 1.123 6.545z"/></svg>
+                            <span class="text-xs font-semibold text-gray-600 dark:text-gray-300">${p.rating}</span>
+                        </div>
+                        <div class="flex items-center justify-between mt-auto pt-2 border-t border-gray-100 dark:border-slate-700">
+                            <div>
+                                <span class="text-xs text-gray-400 block">Price</span>
+                                <span class="font-extrabold text-brand-600 dark:text-brand-400 text-base">৳ ${p.price.toLocaleString()}</span>
+                            </div>
+                            <button onclick="addToCart(${p.id})" class="bg-brand-600 hover:bg-brand-700 text-white p-2.5 rounded-xl shadow shadow-brand-600/30 transition flex items-center justify-center">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // Cart Drawer Operations
+        function addToCart(productId) {
+            const product = products.find(p => p.id === productId);
+            const existing = cart.find(item => item.id === productId);
+            
+            if (existing) {
+                existing.qty += 1;
+            } else {
+                cart.push({ ...product, qty: 1 });
+            }
+
+            updateCartBadge();
+            showToast(`Added ${product.title} to cart`);
+        }
+
+        function updateCartBadge() {
+            const count = cart.reduce((total, item) => total + item.qty, 0);
+            document.getElementById('cart-badge').innerText = count;
+        }
+
+        function openCartDrawer() {
+            renderCartItems();
+            updateCartSummary();
+            document.getElementById('cart-drawer-backdrop').classList.remove('opacity-0', 'pointer-events-none');
+            document.getElementById('cart-drawer').classList.remove('translate-x-full');
+        }
+
+        function closeCartDrawer() {
+            document.getElementById('cart-drawer-backdrop').classList.add('opacity-0', 'pointer-events-none');
+            document.getElementById('cart-drawer').classList.add('translate-x-full');
+        }
+
+        function renderCartItems() {
+            const container = document.getElementById('cart-items-container');
+            if (cart.length === 0) {
+                container.innerHTML = `
+                    <div class="text-center py-12">
+                        <svg class="w-12 h-12 mx-auto text-gray-300 mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"/></svg>
+                        <p class="text-sm font-medium text-gray-500">Your cart is currently empty.</p>
+                    </div>
+                `;
+                return;
+            }
+
+            container.innerHTML = cart.map(item => `
+                <div class="flex items-center gap-3 bg-gray-50 dark:bg-slate-800 p-3 rounded-xl border border-gray-200 dark:border-slate-700">
+                    <img src="${item.img}" class="w-14 h-14 object-cover rounded-lg bg-white">
+                    <div class="flex-grow min-w-0">
+                        <h5 class="text-xs font-bold text-gray-900 dark:text-white truncate">${item.title}</h5>
+                        <p class="text-xs text-brand-600 dark:text-brand-400 font-semibold mt-0.5">৳ ${item.price.toLocaleString()}</p>
+                        <div class="flex items-center gap-2 mt-2">
+                            <button onclick="changeQty(${item.id}, -1)" class="w-5 h-5 rounded bg-gray-200 dark:bg-slate-700 flex items-center justify-center text-xs font-bold">-</button>
+                            <span class="text-xs font-bold w-4 text-center">${item.qty}</span>
+                            <button onclick="changeQty(${item.id}, 1)" class="w-5 h-5 rounded bg-gray-200 dark:bg-slate-700 flex items-center justify-center text-xs font-bold">+</button>
+                        </div>
+                    </div>
+                    <button onclick="removeFromCart(${item.id})" class="text-red-500 hover:text-red-700 p-1">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+                    </button>
+                </div>
+            `).join('');
+        }
+
+        function changeQty(id, delta) {
+            const item = cart.find(i => i.id === id);
+            if (item) {
+                item.qty += delta;
+                if (item.qty <= 0) {
+                    cart = cart.filter(i => i.id !== id);
+                }
+            }
+            updateCartBadge();
+            renderCartItems();
+            updateCartSummary();
+        }
+
+        function removeFromCart(id) {
+            cart = cart.filter(i => i.id !== id);
+            updateCartBadge();
+            renderCartItems();
+            updateCartSummary();
+        }
+
+        function updateCartSummary() {
+            const subtotal = cart.reduce((sum, item) => sum + (item.price * item.qty), 0);
+            const isOutside = document.querySelector('input[name="delivery-zone"]:checked')?.value === 'outside';
+            const deliveryCharge = cart.length > 0 ? (isOutside ? 120 : 60) : 0;
+            const total = subtotal + deliveryCharge;
+
+            document.getElementById('cart-subtotal').innerText = `৳ ${subtotal.toLocaleString()}`;
+            document.getElementById('cart-delivery-cost').innerText = `৳ ${deliveryCharge}`;
+            document.getElementById('cart-total').innerText = `৳ ${total.toLocaleString()}`;
+
+            const checkoutBtn = document.getElementById('btn-proceed-checkout');
+            if (cart.length === 0) {
+                checkoutBtn.disabled = true;
+                checkoutBtn.classList.add('opacity-50', 'cursor-not-allowed');
+            } else {
+                checkoutBtn.disabled = false;
+                checkoutBtn.classList.remove('opacity-50', 'cursor-not-allowed');
+            }
+        }
+
+        // Checkout & Payment Logic
+        function openCheckoutModal() {
+            if (cart.length === 0) return;
+            closeCartDrawer();
+            document.getElementById('checkout-modal').classList.remove('opacity-0', 'pointer-events-none');
+        }
+
+        function closeCheckoutModal() {
+            document.getElementById('checkout-modal').classList.add('opacity-0', 'pointer-events-none');
+        }
+
+        function toggleTrxField() {
+            const method = document.querySelector('input[name="payment-method"]:checked').value;
+            const container = document.getElementById('trx-container');
+            if (method === 'COD') {
+                container.classList.add('hidden');
+            } else {
+                container.classList.remove('hidden');
+            }
+        }
+
+        function submitOrder(e) {
+            e.preventDefault();
+            const name = document.getElementById('cust-name').value;
+            const phone = document.getElementById('cust-phone').value;
+            const address = document.getElementById('cust-address').value;
+            const payment = document.querySelector('input[name="payment-method"]:checked').value;
+            const trx = document.getElementById('cust-trx').value;
+
+            const isOutside = document.querySelector('input[name="delivery-zone"]:checked')?.value === 'outside';
+            const deliveryCharge = isOutside ? 120 : 60;
+            const subtotal = cart.reduce((sum, item) => sum + (item.price * item.qty), 0);
+            const totalAmount = subtotal + deliveryCharge;
+
+            const orderId = 'SFG-' + Math.floor(100000 + Math.random() * 900000);
+
+            const newOrder = {
+                id: orderId,
+                customer: name,
+                phone: phone,
+                address: address,
+                payment: payment,
+                trx: trx || 'N/A',
+                items: [...cart],
+                total: totalAmount,
+                status: 'Pending',
+                date: new Date().toLocaleDateString()
+            };
+
+            orders.unshift(newOrder);
+
+            // Show Receipt
+            document.getElementById('rec-id').innerText = orderId;
+            document.getElementById('rec-name').innerText = name;
+            document.getElementById('rec-pay').innerText = `${payment} ${trx ? '(Trx: ' + trx + ')' : ''}`;
+            document.getElementById('rec-amount').innerText = `৳ ${totalAmount.toLocaleString()}`;
+
+            closeCheckoutModal();
+            document.getElementById('receipt-modal').classList.remove('opacity-0', 'pointer-events-none');
+
+            // Reset Cart
+            cart = [];
+            updateCartBadge();
+            renderAdminOrders();
+            updateAdminStats();
+            document.getElementById('checkout-form').reset();
+            toggleTrxField();
+        }
+
+        function closeReceiptModal() {
+            document.getElementById('receipt-modal').classList.add('opacity-0', 'pointer-events-none');
+        }
+
+        // Quick View Modal
+        function openQuickView(id) {
+            const p = products.find(item => item.id === id);
+            const content = document.getElementById('quickview-content');
+            content.innerHTML = `
+                <div class="flex flex-col sm:flex-row gap-4">
+                    <img src="${p.img}" class="w-full sm:w-1/2 rounded-xl object-cover aspect-square">
+                    <div class="flex flex-col justify-between">
+                        <div>
+                            <span class="text-xs font-bold text-brand-600 uppercase">${p.category}</span>
+                            <h3 class="text-xl font-bold text-gray-900 dark:text-white mt-1">${p.title}</h3>
+                            <p class="text-xs text-gray-500 mt-2">${p.desc}</p>
+                            ${p.imei !== 'N/A' ? `<p class="text-[10px] text-gray-400 mt-2">IMEI/SN: ${p.imei}</p>` : ''}
+                        </div>
+                        <div class="mt-4">
+                            <span class="text-2xl font-extrabold text-brand-600 dark:text-brand-400">৳ ${p.price.toLocaleString()}</span>
+                            <button onclick="addToCart(${p.id}); closeQuickView();" class="w-full mt-3 bg-brand-600 hover:bg-brand-700 text-white font-semibold py-2.5 rounded-xl transition">
+                                Add To Cart
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `;
+            document.getElementById('quickview-modal').classList.remove('opacity-0', 'pointer-events-none');
+        }
+
+        function closeQuickView() {
+            document.getElementById('quickview-modal').classList.add('opacity-0', 'pointer-events-none');
+        }
+
+        // View Switcher (Storefront <-> Admin Panel)
+        function toggleMainView() {
+            if (currentView === 'store') {
+                switchView('admin');
+            } else {
+                switchView('store');
+            }
+        }
+
+        function switchView(view) {
+            currentView = view;
+            const storeView = document.getElementById('store-view');
+            const adminView = document.getElementById('admin-view');
+            const label = document.getElementById('view-label');
+
+            if (view === 'admin') {
+                storeView.classList.add('hidden');
+                adminView.classList.remove('hidden');
+                label.innerText = 'Storefront';
+                updateAdminStats();
+            } else {
+                adminView.classList.add('hidden');
+                storeView.classList.remove('hidden');
+                label.innerText = 'Admin Panel';
+            }
+        }
+
+        // Admin Dashboard Functions
+        function renderAdminInventory() {
+            const container = document.getElementById('admin-inventory-list');
+            container.innerHTML = products.map(p => `
+                <tr class="hover:bg-gray-50 dark:hover:bg-slate-700/30 transition">
+                    <td class="px-6 py-4 flex items-center gap-3">
+                        <img src="${p.img}" class="w-8 h-8 rounded-lg object-cover">
+                        <span class="font-bold text-gray-900 dark:text-white">${p.title}</span>
+                    </td>
+                    <td class="px-6 py-4">${p.category}</td>
+                    <td class="px-6 py-4 font-semibold text-brand-600">৳ ${p.price.toLocaleString()}</td>
+                    <td class="px-6 py-4"><span class="px-2 py-1 rounded-full text-xs font-semibold bg-green-100 text-green-700">${p.badge}</span></td>
+                    <td class="px-6 py-4 text-xs font-mono text-gray-500">${p.imei}</td>
+                    <td class="px-6 py-4 text-right">
+                        <button onclick="deleteProduct(${p.id})" class="text-red-500 hover:text-red-700 text-xs font-semibold">Delete</button>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        function renderAdminOrders() {
+            const container = document.getElementById('admin-orders-list');
+            document.getElementById('order-count-badge').innerText = `${orders.length} Orders`;
+
+            if (orders.length === 0) {
+                container.innerHTML = `<tr><td colspan="7" class="text-center py-6 text-xs text-gray-400">No orders placed yet.</td></tr>`;
+                return;
+            }
+
+            container.innerHTML = orders.map(o => `
+                <tr class="hover:bg-gray-50 dark:hover:bg-slate-700/30 transition">
+                    <td class="px-6 py-4 font-mono font-bold text-gray-900 dark:text-white text-xs">${o.id}</td>
+                    <td class="px-6 py-4">
+                        <div class="font-bold text-gray-900 dark:text-white">${o.customer}</div>
+                        <div class="text-xs text-gray-400">${o.phone}</div>
+                    </td>
+                    <td class="px-6 py-4 text-xs max-w-xs truncate">${o.address}</td>
+                    <td class="px-6 py-4 text-xs">
+                        <span class="font-semibold text-gray-800 dark:text-gray-200">${o.payment}</span>
+                        ${o.trx !== 'N/A' ? `<div class="text-[10px] text-brand-600 font-mono">Trx: ${o.trx}</div>` : ''}
+                    </td>
+                    <td class="px-6 py-4 text-xs">
+                        ${o.items.map(i => `${i.title} (${i.qty})`).join(', ')}
+                    </td>
+                    <td class="px-6 py-4 font-extrabold text-brand-600">৳ ${o.total.toLocaleString()}</td>
+                    <td class="px-6 py-4">
+                        <select onchange="updateOrderStatus('${o.id}', this.value)" class="text-xs p-1 rounded-lg border border-gray-300 dark:border-slate-700 bg-white dark:bg-slate-800 font-semibold">
+                            <option value="Pending" ${o.status === 'Pending' ? 'selected' : ''}>Pending</option>
+                            <option value="Processing" ${o.status === 'Processing' ? 'selected' : ''}>Processing</option>
+                            <option value="Delivered" ${o.status === 'Delivered' ? 'selected' : ''}>Delivered</option>
+                        </select>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        function updateOrderStatus(orderId, newStatus) {
+            const order = orders.find(o => o.id === orderId);
+            if (order) {
+                order.status = newStatus;
+                showToast(`Order ${orderId} status set to ${newStatus}`);
+                updateAdminStats();
+            }
+        }
+
+        function updateAdminStats() {
+            const totalRevenue = orders.reduce((sum, o) => sum + o.total, 0);
+            document.getElementById('stat-revenue').innerText = `৳ ${totalRevenue.toLocaleString()}`;
+            document.getElementById('stat-orders').innerText = orders.length;
+            document.getElementById('stat-products').innerText = products.length;
+        }
+
+        function openAddProductModal() {
+            document.getElementById('add-product-modal').classList.remove('opacity-0', 'pointer-events-none');
+        }
+
+        function closeAddProductModal() {
+            document.getElementById('add-product-modal').classList.add('opacity-0', 'pointer-events-none');
+        }
+
+        function saveNewProduct(e) {
+            e.preventDefault();
+            const title = document.getElementById('p-title').value;
+            const price = parseFloat(document.getElementById('p-price').value);
+            const category = document.getElementById('p-category').value;
+            const img = document.getElementById('p-img').value;
+            const imei = document.getElementById('p-imei').value || 'N/A';
+            const badge = document.getElementById('p-badge').value || 'In Stock';
+
+            const newProduct = {
+                id: Date.now(),
+                title,
+                category,
+                price,
+                rating: 5.0,
+                badge,
+                img,
+                imei,
+                desc: 'Official warranty product available at SF Gallery.'
+            };
+
+            products.unshift(newProduct);
+            renderProducts();
+            renderAdminInventory();
+            updateAdminStats();
+            closeAddProductModal();
+            showToast('New product added successfully!');
+        }
+
+        function deleteProduct(id) {
+            products = products.filter(p => p.id !== id);
+            renderProducts();
+            renderAdminInventory();
+            updateAdminStats();
+            showToast('Product removed from store');
+        }
+
+        // Dark Theme Switcher
+        function toggleTheme() {
+            document.documentElement.classList.toggle('dark');
+        }
+
+        // Toast Notification System
+        function showToast(message) {
+            const container = document.getElementById('toast-container');
+            const toast = document.createElement('div');
+            toast.className = 'bg-slate-900 text-white dark:bg-slate-100 dark:text-slate-900 px-4 py-3 rounded-xl shadow-xl text-xs font-semibold flex items-center justify-between transition-all duration-300 transform translate-y-2 pointer-events-auto';
+            toast.innerHTML = `
+                <div class="flex items-center gap-2">
+                    <svg class="w-4 h-4 text-brand-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+                    <span>${message}</span>
+                </div>
+            `;
+            container.appendChild(toast);
+            setTimeout(() => toast.classList.remove('translate-y-2'), 10);
+            setTimeout(() => {
+                toast.classList.add('opacity-0');
+                setTimeout(() => toast.remove(), 300);
+            }, 3000);
+        }
+    </script>
+</body>
+</html>
+```
