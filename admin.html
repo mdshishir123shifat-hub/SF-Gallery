@@ -3,227 +3,160 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SF Gallery - Admin Dashboard</title>
+    <title>Mobile Admin Dashboard</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
     <style>body { font-family: 'Inter', sans-serif; }</style>
 </head>
-<body class="bg-gray-50 dark:bg-slate-900 text-gray-800 dark:text-gray-100 min-h-screen p-4 sm:p-6">
-
-    <!-- Toast Notification -->
+<body class="bg-gray-50 text-gray-800 min-h-screen p-4 sm:p-6">
     <div id="toast" class="fixed top-5 right-5 bg-green-600 text-white px-4 py-2 rounded-xl text-xs font-semibold shadow-lg hidden z-50"></div>
 
-    <div class="max-w-7xl mx-auto">
-        <!-- Header -->
-        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8">
-            <div>
-                <h1 class="text-2xl font-bold">SF Gallery Admin Panel</h1>
-                <p class="text-xs text-gray-500">প্রোডাক্ট যোগ, এডিট, ডিলিট এবং কাস্টমার অর্ডার কন্ট্রোল করুন</p>
-            </div>
-            <a href="index.html" target="_blank" class="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-semibold transition">View Live Store ↗</a>
+    <div class="max-w-5xl mx-auto">
+        <div class="flex justify-between items-center mb-6">
+            <h1 class="text-xl font-bold">Mobile Spec Admin Panel</h1>
+            <a href="index.html" target="_blank" class="px-4 py-2 bg-emerald-600 text-white rounded-xl text-xs font-semibold">View Live Site ↗</a>
         </div>
 
-        <!-- Add / Edit Product Form -->
-        <div class="bg-white dark:bg-slate-800 p-6 rounded-2xl shadow-sm border border-gray-200 dark:border-slate-700 mb-8">
-            <h3 id="form-title" class="font-bold text-lg mb-4 text-emerald-600 dark:text-emerald-400">Add New Product</h3>
-            <form onsubmit="handleFormSubmit(event)" class="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                <input type="hidden" id="edit-product-id">
-
-                <div>
-                    <label class="block text-xs font-semibold text-gray-500 uppercase mb-1">Product Title</label>
-                    <input type="text" id="a-title" required placeholder="e.g. Xiaomi Note 13 Pro" class="w-full px-3 py-2 border rounded-xl text-sm bg-gray-50 dark:bg-slate-700 dark:border-slate-600 outline-none focus:ring-2 focus:ring-emerald-500">
-                </div>
-                
-                <div>
-                    <label class="block text-xs font-semibold text-gray-500 uppercase mb-1">Price (৳ BDT)</label>
-                    <input type="number" id="a-price" required placeholder="e.g. 28500" class="w-full px-3 py-2 border rounded-xl text-sm bg-gray-50 dark:bg-slate-700 dark:border-slate-600 outline-none focus:ring-2 focus:ring-emerald-500">
-                </div>
-
-                <div>
-                    <label class="block text-xs font-semibold text-gray-500 uppercase mb-1">Category</label>
-                    <select id="a-cat" class="w-full px-3 py-2 border rounded-xl text-sm bg-gray-50 dark:bg-slate-700 dark:border-slate-600 outline-none focus:ring-2 focus:ring-emerald-500">
-                        <option value="Mobile & Accessories">Mobile & Accessories</option>
-                        <option value="Electronics">Electronics</option>
-                        <option value="Fashion">Fashion</option>
-                        <option value="LifeStyle">LifeStyle</option>
+        <!-- Add / Edit Form -->
+        <div class="bg-white p-6 rounded-2xl shadow-sm border mb-8">
+            <h3 id="form-title" class="font-bold text-base mb-4 text-emerald-600">Add New Phone</h3>
+            <form onsubmit="handleFormSubmit(event)" class="grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs">
+                <input type="hidden" id="edit-id">
+                <div><label class="font-semibold block mb-1">Phone Name</label><input type="text" id="m-name" required class="w-full px-3 py-2 border rounded-xl"></div>
+                <div><label class="font-semibold block mb-1">Brand</label>
+                    <select id="m-brand" class="w-full px-3 py-2 border rounded-xl">
+                        <option value="Xiaomi">Xiaomi</option><option value="Samsung">Samsung</option><option value="Realme">Realme</option><option value="Vivo">Vivo</option><option value="Apple">Apple</option><option value="Oppo">Oppo</option>
                     </select>
                 </div>
-
-                <div class="sm:col-span-2">
-                    <label class="block text-xs font-semibold text-gray-500 uppercase mb-1">Image URL</label>
-                    <input type="url" id="a-img" required placeholder="https://images.unsplash.com/..." class="w-full px-3 py-2 border rounded-xl text-sm bg-gray-50 dark:bg-slate-700 dark:border-slate-600 outline-none focus:ring-2 focus:ring-emerald-500">
-                </div>
-
-                <div class="flex items-end gap-2">
-                    <button type="submit" id="submit-btn" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-semibold py-2.5 rounded-xl text-sm transition">
-                        Save Product
-                    </button>
-                    <button type="button" id="cancel-btn" onclick="resetForm()" class="hidden w-1/3 bg-gray-300 dark:bg-slate-700 text-gray-700 dark:text-gray-200 font-semibold py-2.5 rounded-xl text-sm transition">
-                        Cancel
-                    </button>
+                <div><label class="font-semibold block mb-1">Price (BDT)</label><input type="text" id="m-price" required class="w-full px-3 py-2 border rounded-xl" placeholder="28,500"></div>
+                <div><label class="font-semibold block mb-1">Status</label><select id="m-status" class="w-full px-3 py-2 border rounded-xl"><option value="Official">Official</option><option value="Unofficial">Unofficial</option></select></div>
+                <div class="sm:col-span-2"><label class="font-semibold block mb-1">Image URL</label><input type="url" id="m-img" required class="w-full px-3 py-2 border rounded-xl" placeholder="https://..."></div>
+                <div><label class="font-semibold block mb-1">Processor</label><input type="text" id="m-proc" class="w-full px-3 py-2 border rounded-xl" placeholder="Helio G99"></div>
+                <div><label class="font-semibold block mb-1">RAM & ROM</label><input type="text" id="m-ram" class="w-full px-3 py-2 border rounded-xl" placeholder="8GB / 256GB"></div>
+                <div><label class="font-semibold block mb-1">Camera</label><input type="text" id="m-cam" class="w-full px-3 py-2 border rounded-xl" placeholder="200MP"></div>
+                <div><label class="font-semibold block mb-1">Battery</label><input type="text" id="m-bat" class="w-full px-3 py-2 border rounded-xl" placeholder="5000 mAh"></div>
+                
+                <div class="sm:col-span-3 flex gap-2 mt-3">
+                    <button type="submit" id="submit-btn" class="bg-emerald-600 text-white font-semibold px-6 py-2.5 rounded-xl">Save Phone</button>
+                    <button type="button" id="cancel-btn" onclick="resetForm()" class="hidden bg-gray-300 px-4 py-2.5 rounded-xl">Cancel</button>
                 </div>
             </form>
         </div>
 
-        <!-- Current Products List -->
-        <div class="bg-white dark:bg-slate-800 p-6 rounded-2xl shadow-sm border border-gray-200 dark:border-slate-700 mb-8">
-            <h3 class="font-bold text-lg mb-4">Inventory Products</h3>
+        <!-- Phone List Table -->
+        <div class="bg-white p-6 rounded-2xl shadow-sm border">
+            <h3 class="font-bold text-base mb-4">Manage Phone Database</h3>
             <div class="overflow-x-auto">
-                <table class="w-full text-left text-xs text-gray-600 dark:text-gray-300">
-                    <thead class="bg-gray-100 dark:bg-slate-700 uppercase text-gray-500 dark:text-gray-400">
-                        <tr>
-                            <th class="p-3">Product</th>
-                            <th class="p-3">Category</th>
-                            <th class="p-3">Price</th>
-                            <th class="p-3 text-right">Actions</th>
-                        </tr>
+                <table class="w-full text-left text-xs">
+                    <thead class="bg-gray-100 uppercase text-gray-500">
+                        <tr><th class="p-2">Phone</th><th class="p-2">Brand</th><th class="p-2">Price</th><th class="p-2 text-right">Action</th></tr>
                     </thead>
-                    <tbody id="product-list-table" class="divide-y divide-gray-200 dark:divide-slate-700">
-                        <!-- Dynamic items -->
-                    </tbody>
+                    <tbody id="admin-table" class="divide-y"></tbody>
                 </table>
             </div>
-        </div>
-
-        <!-- Customer Orders -->
-        <div class="bg-white dark:bg-slate-800 p-6 rounded-2xl shadow-sm border border-gray-200 dark:border-slate-700">
-            <h3 class="font-bold text-lg mb-4">Customer Orders</h3>
-            <div id="admin-orders-list" class="space-y-3 text-xs">অর্ডার লোড হচ্ছে...</div>
         </div>
     </div>
 
     <script>
-        let products = JSON.parse(localStorage.getItem('sf_products')) || [
-            { id: 1, title: 'Xiaomi Redmi Note 13 Pro', category: 'Mobile & Accessories', price: 28500, badge: 'Hot', img: 'https://images.unsplash.com/photo-1598327105666-5b89351aff97?auto=format&fit=crop&w=400&q=80' },
-            { id: 2, title: 'Realme Buds Air 5 Wireless', category: 'Electronics', price: 3850, badge: 'In Stock', img: 'https://images.unsplash.com/photo-1590658268037-6bf12165a8df?auto=format&fit=crop&w=400&q=80' }
+        let phoneData = JSON.parse(localStorage.getItem('sf_phones')) || [
+            { id: 1, name: "Xiaomi Redmi Note 13 Pro", brand: "Xiaomi", price: "28,500", status: "Official", img: "https://images.unsplash.com/photo-1598327105666-5b89351aff97?w=300", ram: "8GB", storage: "256GB", display: '6.67" AMOLED', camera: "200MP", battery: "5000 mAh", proc: "Helio G99" },
+            { id: 2, name: "Samsung Galaxy A35 5G", brand: "Samsung", price: "39,999", status: "Official", img: "https://images.unsplash.com/photo-1610945265064-0e34e5519bbf?w=300", ram: "8GB", storage: "128GB", display: '6.6" Super AMOLED', camera: "50MP", battery: "5000 mAh", proc: "Exynos 1380" }
         ];
 
-        window.onload = function() {
-            renderInventory();
-            renderOrders();
-        };
+        window.onload = function() { renderTable(); };
 
-        // Render Inventory Items with Edit and Delete Option
-        function renderInventory() {
-            const table = document.getElementById('product-list-table');
-            table.innerHTML = products.map(p => `
-                <tr class="hover:bg-gray-50 dark:hover:bg-slate-700/50">
-                    <td class="p-3 flex items-center gap-3">
-                        <img src="${p.img}" class="w-8 h-8 rounded-lg object-cover">
-                        <span class="font-bold text-gray-900 dark:text-white">${p.title}</span>
-                    </td>
-                    <td class="p-3">${p.category}</td>
-                    <td class="p-3 font-semibold text-emerald-600">৳ ${p.price.toLocaleString()}</td>
-                    <td class="p-3 text-right space-x-2">
-                        <button onclick="editProduct(${p.id})" class="px-3 py-1 bg-blue-500 hover:bg-blue-600 text-white rounded-lg text-[11px] font-semibold transition">Edit</button>
-                        <button onclick="deleteProduct(${p.id})" class="px-3 py-1 bg-red-500 hover:bg-red-600 text-white rounded-lg text-[11px] font-semibold transition">Delete</button>
+        function renderTable() {
+            document.getElementById('admin-table').innerHTML = phoneData.map(p => `
+                <tr class="hover:bg-gray-50">
+                    <td class="p-2 flex items-center gap-2"><img src="${p.img}" class="w-8 h-8 object-contain">${p.name}</td>
+                    <td class="p-2">${p.brand}</td>
+                    <td class="p-2 font-semibold text-emerald-600">৳ ${p.price}</td>
+                    <td class="p-2 text-right space-x-1">
+                        <button onclick="editPhone(${p.id})" class="px-2 py-1 bg-blue-500 text-white rounded text-[10px]">Edit</button>
+                        <button onclick="deletePhone(${p.id})" class="px-2 py-1 bg-red-500 text-white rounded text-[10px]">Delete</button>
                     </td>
                 </tr>
             `).join('');
         }
 
-        // Add or Edit Product Submit Handler
         function handleFormSubmit(e) {
             e.preventDefault();
-            const editId = document.getElementById('edit-product-id').value;
-            const title = document.getElementById('a-title').value;
-            const price = parseFloat(document.getElementById('a-price').value);
-            const category = document.getElementById('a-cat').value;
-            const img = document.getElementById('a-img').value;
+            const id = document.getElementById('edit-id').value;
+            const phone = {
+                id: id ? parseInt(id) : Date.now(),
+                name: document.getElementById('m-name').value,
+                brand: document.getElementById('m-brand').value,
+                price: document.getElementById('m-price').value,
+                status: document.getElementById('m-status').value,
+                img: document.getElementById('m-img').value,
+                proc: document.getElementById('m-proc').value || 'N/A',
+                ram: document.getElementById('m-ram').value || 'N/A',
+                camera: document.getElementById('m-cam').value || 'N/A',
+                battery: document.getElementById('m-bat').value || 'N/A'
+            };
 
-            if (editId) {
-                // Edit mode: Update existing product
-                const index = products.findIndex(p => p.id == editId);
-                if (index !== -1) {
-                    products[index].title = title;
-                    products[index].price = price;
-                    products[index].category = category;
-                    products[index].img = img;
-                    showToast('Product Updated Successfully!');
-                }
+            if(id) {
+                const index = phoneData.findIndex(p => p.id == id);
+                if(index !== -1) phoneData[index] = phone;
+                showToast('Phone Updated Successfully!');
             } else {
-                // Add mode: Add new product
-                products.unshift({
-                    id: Date.now(),
-                    title,
-                    price,
-                    category,
-                    img,
-                    badge: 'New',
-                    rating: 5.0
-                });
-                showToast('New Product Added Successfully!');
+                phoneData.unshift(phone);
+                showToast('Phone Added Successfully!');
             }
 
-            localStorage.setItem('sf_products', JSON.stringify(products));
+            localStorage.setItem('sf_phones', JSON.stringify(phoneData));
             resetForm();
-            renderInventory();
+            renderTable();
         }
 
-        // Fill form fields for Edit
-        function editProduct(id) {
-            const p = products.find(item => item.id == id);
-            if (!p) return;
+        function editPhone(id) {
+            const p = phoneData.find(item => item.id == id);
+            if(!p) return;
+            document.getElementById('edit-id').value = p.id;
+            document.getElementById('m-name').value = p.name;
+            document.getElementById('m-brand').value = p.brand;
+            document.getElementById('m-price').value = p.price;
+            document.getElementById('m-status').value = p.status;
+            document.getElementById('m-img').value = p.img;
+            document.getElementById('m-proc').value = p.proc;
+            document.getElementById('m-ram').value = p.ram;
+            document.getElementById('m-cam').value = p.camera;
+            document.getElementById('m-bat').value = p.battery;
 
-            document.getElementById('edit-product-id').value = p.id;
-            document.getElementById('a-title').value = p.title;
-            document.getElementById('a-price').value = p.price;
-            document.getElementById('a-cat').value = p.category;
-            document.getElementById('a-img').value = p.img;
-
-            document.getElementById('form-title').innerText = "Edit Product Details";
-            document.getElementById('submit-btn').innerText = "Update Product";
+            document.getElementById('form-title').innerText = "Edit Phone Details";
+            document.getElementById('submit-btn').innerText = "Update Phone";
             document.getElementById('cancel-btn').classList.remove('hidden');
-
-            window.scrollTo({ top: 0, behavior: 'smooth' });
+            window.scrollTo({top:0, behavior:'smooth'});
         }
 
-        // Delete Product
-        function deleteProduct(id) {
-            if (confirm("Are you sure you want to delete this product?")) {
-                products = products.filter(p => p.id != id);
-                localStorage.setItem('sf_products', JSON.stringify(products));
-                renderInventory();
-                showToast('Product Removed!');
+        function deletePhone(id) {
+            if(confirm("Are you sure?")) {
+                phoneData = phoneData.filter(p => p.id != id);
+                localStorage.setItem('sf_phones', JSON.stringify(phoneData));
+                renderTable();
+                showToast('Phone Deleted!');
             }
         }
 
-        // Reset Form
         function resetForm() {
-            document.getElementById('edit-product-id').value = '';
-            document.getElementById('a-title').value = '';
-            document.getElementById('a-price').value = '';
-            document.getElementById('a-img').value = '';
-            document.getElementById('form-title').innerText = "Add New Product";
-            document.getElementById('submit-btn').innerText = "Save Product";
+            document.getElementById('edit-id').value = '';
+            document.getElementById('m-name').value = '';
+            document.getElementById('m-price').value = '';
+            document.getElementById('m-img').value = '';
+            document.getElementById('m-proc').value = '';
+            document.getElementById('m-ram').value = '';
+            document.getElementById('m-cam').value = '';
+            document.getElementById('m-bat').value = '';
+            document.getElementById('form-title').innerText = "Add New Phone";
+            document.getElementById('submit-btn').innerText = "Save Phone";
             document.getElementById('cancel-btn').classList.add('hidden');
         }
 
-        // Render Customer Orders
-        function renderOrders() {
-            let orders = JSON.parse(localStorage.getItem('sf_orders')) || [];
-            const container = document.getElementById('admin-orders-list');
-            if (orders.length === 0) {
-                container.innerHTML = '<p class="text-gray-400">এখনো কোনো কাস্টমার অর্ডার করেনি।</p>';
-                return;
-            }
-            container.innerHTML = orders.map(o => `
-                <div class="p-3 border rounded-xl flex justify-between items-center bg-gray-50 dark:bg-slate-700 dark:border-slate-600">
-                    <div>
-                        <strong class="text-gray-900 dark:text-white">${o.id}</strong> - ${o.customer} (${o.phone})<br>
-                        <span class="text-gray-500">${o.address}</span><br>
-                        <strong>Items:</strong> ${o.items.map(i => i.title + ' (x' + i.qty + ')').join(', ')}
-                    </div>
-                    <div class="font-bold text-emerald-600 text-sm">৳ ${o.total.toLocaleString()}</div>
-                </div>
-            `).join('');
-        }
-
         function showToast(msg) {
-            const toast = document.getElementById('toast');
-            toast.innerText = msg;
-            toast.classList.remove('hidden');
-            setTimeout(() => toast.classList.add('hidden'), 3000);
+            const t = document.getElementById('toast');
+            t.innerText = msg;
+            t.classList.remove('hidden');
+            setTimeout(() => t.classList.add('hidden'), 3000);
         }
     </script>
 </body>
